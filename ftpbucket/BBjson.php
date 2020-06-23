@@ -134,6 +134,11 @@ class BBjson
                 break;
         }
 
+        if( $ftp['type'] == 'ftp' || $ftp['type'] == 'ssh' )
+            $this->log_it ( 'Pushing to {' . $ftp['ftp_host'] . $ftp['ftp_path'] . '}' );
+        elseif( $ftp['type'] == 'none' )
+            $this->log_it ( 'Pushing to {' . $ftp['ftp_path'] . '}' );
+
         foreach ( $branch_config['changes'] as $index => $change ) {
             $msgIsSent = true;
             $message = "";
