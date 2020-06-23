@@ -337,7 +337,7 @@ class BBjson
      * LOGGING FUNCTIONS
      **/
     function error ( $text ) {
-        $this->log_it ( $text ); 
+        $this->log_it ( $text . PHP_EOL ); 
         $this->log_payload ( $this->log_it ( json_encode ( $this->payload ) , false ) ); 
         die(); 
     }
