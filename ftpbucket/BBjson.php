@@ -324,12 +324,11 @@ class BBjson
         // Increase sleep time each time we hit the rate limit so we don't hammer the server
         $sleep_time = pow( ( $this->rate_limits_hit / 2 ) , 2 ) + 1;
 
-        $message .= $this->log_it (
+        $this->log_it (
             sprintf( 'Waiting %s seconds because we hit a rate limit. We have hit the rate limit %d time(s) so far.',
                 $sleep_time,
                 $this->rate_limits_hit
-            ),
-            $msgIsSent
+            )
         );
         sleep( $sleep_time );
     }
