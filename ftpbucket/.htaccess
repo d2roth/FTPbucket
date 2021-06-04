@@ -1,4 +1,4 @@
-SetEnv PHP_VER 54
+
 # Protect log.txt
 <Files *.txt>
 Order Allow,Deny
