@@ -2,5 +2,6 @@ ftpbucket/config.php
 ftpbucket/logfile.txt
 ftpbucket/logpayload.txt
 ftpbucket/logconnection.txt
+ftpbucket/lastpayload.txt
 .idea/
 error_log
