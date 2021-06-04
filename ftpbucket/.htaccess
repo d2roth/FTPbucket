@@ -1,4 +1,12 @@
 SetEnv PHP_VER 54
+# Protect log.txt
+<Files *.txt>
+Order Allow,Deny
+Deny from all
+</Files>
+
+# Disable directory browsing
+Options All -Indexes
 
 # https://confluence.atlassian.com/bitbucket/manage-webhooks-735643732.html
 # https://confluence.atlassian.com/bitbucket/what-are-the-bitbucket-cloud-ip-addresses-i-should-use-to-configure-my-corporate-firewall-343343385.html
