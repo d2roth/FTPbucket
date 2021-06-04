@@ -29,6 +29,7 @@ class BBjson
             $this->error ( 'No changes detected' ); 
 
         $this->load_config();
+        $this->verify_connection();
 
         foreach ( $this->config->branch as $branch_name => $branch_config ) {
             $this->load_changed_files ( $branch_config ); 
@@ -85,7 +86,7 @@ class BBjson
 
             foreach ( $this->config->ftp['branches'] as $br ) {
                 if ( $br['branch_name'] == $branch_name ) {
-                    $this->config->branch[$branch_name]['ftp'] = $br;
+                    $this->config->branch[$branch_name]['ftp'] = $this->normalize_ftp( $br );
                     $this->config->branch[$branch_name]['changes'][] = $change;
 
                     $check++;
@@ -102,10 +103,7 @@ class BBjson
         }
     }
 
-    private function load_changed_files ( $branch_config ) {
-        $repo_full_name = $this->payload['repository']['full_name'];
-
-        $ftp = $branch_config['ftp'];
+    private function normalize_ftp( $ftp ){
 
         if ( $ftp['type'] == 'ssh' && !function_exists ( 'ssh2_connect' ) ) 
             $this->error ( 'error: You don\'t have SSH capabilities on this server. You must install the SSH2 extension available from PECL' ); 
@@ -133,6 +131,36 @@ class BBjson
                 $this->error ( 'error: ' . strtoupper ( $ftp['type'] ) . ' Connection type not reconized!' ); 
                 break;
         }
+
+        $ftp['wrapper'] = $wrapper;
+
+        return $ftp;
+    }
+
+    private function verify_connection(){
+        $file_path = "ftpbucket_test_" . uniqid();
+
+        foreach( $this->config->branch as $branch_name => $branch_config ){
+            $this->log_it("CONFIG:" . json_encode($branch_config['ftp']));
+            $wrapper = $branch_config['ftp']['wrapper'];
+
+            // Could refactor this so it doesn't actually store a file but instead simply checks the login is valid
+            $results = file_put_contents ( $wrapper . $file_path, time(), 0, stream_context_create ( array ( 'ftp' => array ( 'overwrite' => true ) ) ) );
+            if( $results ){
+                $this->log_it('Connection successful');
+                @unlink ( $wrapper . $file_path );
+            } else {
+                $this->error('Connection failed');
+            }
+        }
+        exit;
+    }
+
+    private function load_changed_files ( $branch_config ) {
+        $repo_full_name = $this->payload['repository']['full_name'];
+
+        $ftp = $branch_config['ftp'];
+        $wrapper = $ftp['wrapper'];
 
         if( $ftp['type'] == 'ftp' || $ftp['type'] == 'ssh' )
             $this->log_it ( 'Pushing to {' . $ftp['ftp_host'] . $ftp['ftp_path'] . '}' );
