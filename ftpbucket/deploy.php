@@ -23,7 +23,12 @@ if ($fp = fopen('logconnection.txt', 'a')) {
 }
 
 
-$inputJSON = file_get_contents('php://input');
+if( isset( $_GET['last_payload'] ) && file_exists( __DIR__ . '/lastpayload.txt' ) ){
+    $inputJSON = file_get_contents(__DIR__ . '/lastpayload.txt');
+} else {
+    $inputJSON = file_get_contents('php://input');
+}
+file_put_contents(__DIR__ . '/lastpayload.txt', $inputJSON);
 $payload = json_decode($inputJSON, TRUE);
 
 if (!isset($payload)) {
